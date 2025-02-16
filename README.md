@@ -1,1 +1,1 @@
-# resonance
+# galaxy_helper
