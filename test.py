@@ -17,6 +17,13 @@ SAMPLE_RATE = 16000  # Частота дискретизации
 BATCH_TIME = 4  # Время (в сек.), через которое текст отправляется на обработку
 SPEECH_QUEUE = queue.Queue()  # Очередь для озвучки
 
+col1, col2, col3 = st.columns([1, 6, 1])  # Пропорции колонок
+
+with col2:  # Центрируем изображение и текст во второй колонке
+    # Меньшее изображение
+    st.image("resize_photo_2025-02-16_12-40-54.jpg", width=400)  # Указан размер ширины изображения
+
+
 # === Очередь для аудио ===
 q = queue.Queue()
 
@@ -37,7 +44,7 @@ model = vosk.Model(MODEL_PATH)
 recognizer = vosk.KaldiRecognizer(model, SAMPLE_RATE)
 
 # === Интерфейс Streamlit ===
-st.title("🎙️ Распознавание, перевод и озвучка речи")
+st.title("Resonance")
 st.text("Нажмите кнопку ниже, чтобы начать запись с микрофона.")
 
 # === Выбор языка для перевода ===
@@ -112,7 +119,7 @@ def process_audio():
                 if result["text"].strip():
                     time.sleep(0.5)  # Задержка перед выводом финального текста
                     recognized_text = result["text"]
-                    subtitle_text.text(f"📝 Текущий текст: {recognized_text}")
+                    subtitle_text.text(f"📝 Текущие слова: {recognized_text}")
 
                     # Перевод
                     translated = translate_text(recognized_text, target_language)
@@ -122,8 +129,8 @@ def process_audio():
                     st.session_state.history += recognized_text + " "
                     st.session_state.translated_history += translated + " "
 
-                    history_text.text(f"📜 История распознавания:\n{st.session_state.history}\n\n"
-                                      f"🌍 История перевода:\n{st.session_state.translated_history}")
+                    history_text.text(f"📜 Полный текст:\n{st.session_state.history}\n\n"
+                                      f"🌍 Полный перевод:\n{st.session_state.translated_history}")
 
                     # Добавляем текст в очередь на озвучку
                     if enable_speech:
@@ -133,7 +140,7 @@ def process_audio():
                 partial_result = recognizer.PartialResult()
                 partial_data = json.loads(partial_result)
                 if partial_data.get("partial", "").strip():
-                    subtitle_text.text(f"⏳ Распознаю: {partial_data['partial']}")
+                    subtitle_text.text(f"📝 Текущие слова: {partial_data['partial']}")
 
 # === Кнопки управления ===
 col1, col2 = st.columns(2)
